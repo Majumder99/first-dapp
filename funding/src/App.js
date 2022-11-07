@@ -4,6 +4,8 @@ import Web3 from "web3";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { loadContract } from "./utils/load-contract";
 
+//m,dKK@;fl99
+
 function App() {
   const [web3Api, setWeb3Api] = useState({
     provider: null,
@@ -13,18 +15,16 @@ function App() {
 
   const [account, setAccount] = useState(null);
   const [balance, setBalance] = useState(null);
-  const [reload, shouldReload] = useState(false);
+  const [reload, setReload] = useState(false);
 
-  const reloadEffect = () => shouldReload(!reload);
-  const setAccountListener = (provider) => {
-    provider.on("accountsChanged", (accounts) => setAccount(accounts[0]));
-  };
+  const reloadEffect = () => {
+    setReload(!reload)
+  }
   useEffect(() => {
     const loadProvider = async () => {
       const provider = await detectEthereumProvider();
       const contract = await loadContract("Funder", provider);
       if (provider) {
-        setAccountListener(provider);
         provider.request({ method: "eth_requestAccounts" });
         setWeb3Api({
           web3: new Web3(provider),
@@ -53,30 +53,30 @@ function App() {
 
   useEffect(() => {
     const loadBalance = async () => {
-      const { contract, web3 } = web3Api;
+      const {contract, web3} = web3Api;
       const balance = await web3.eth.getBalance(contract.address);
       setBalance(web3.utils.fromWei(balance, "ether"));
-    };
+    }
     web3Api.contract && loadBalance();
   }, [web3Api, reload]);
 
   const transferFund = async () => {
-    const { web3, contract } = web3Api;
+    const { contract, web3 } = web3Api
     await contract.transfer({
-      from: account,
-      value: web3.utils.toWei("2", "ether"),
-    });
-    reloadEffect();
-  };
-
-  const withdrawFund = async () => {
+      from: account, 
+      value: web3.utils.toWei("2", "ether")
+    })
+    reloadEffect()
+  }
+  
+  const withdrawEth = async () => {
     const { contract, web3 } = web3Api;
-    const withdrawAmout = web3.utils.toWei("2", "ether");
-    await contract.withdraw(withdrawAmout, {
-      from: account,
-    });
-    reloadEffect();
-  };
+    const withdrawAmount = web3.utils.toWei("1", "ether")
+    await contract.withdraw(withdrawAmount, {
+      from: account
+    })
+    reloadEffect()
+  }
 
   useEffect(() => {
     const getAccount = async () => {
@@ -89,16 +89,16 @@ function App() {
   // console.log(web3Api.web3);
   return (
     <>
-      <div class="card text-center">
-        <div class="card-header">Funding</div>
-        <div class="card-body">
-          <h5 class="card-title">Balance: {balance} ETH </h5>
-          <p class="card-text">
+      <div className="card text-center">
+        <div className="card-header">Funding</div>
+        <div className="card-body">
+          <h5 className="card-title">Balance: {balance} ETH </h5>
+          <p className="card-text">
             Account : {account ? account : "not connected"}
           </p>
           {/* <button
             type="button"
-            class="btn btn-success"
+            className="btn btn-success"
             onClick={async () => {
               const accounts = await window.ethereum.request({
                 method: "eth_requestAccounts",
@@ -109,15 +109,15 @@ function App() {
             Connect to metamask
           </button> */}
           &nbsp;
-          <button type="button" class="btn btn-success " onClick={transferFund}>
+          <button type="button" className="btn btn-success" onClick={transferFund}>
             Transfer
           </button>
           &nbsp;
-          <button type="button" class="btn btn-primary " onClick={withdrawFund}>
+          <button type="button" className="btn btn-primary" onClick={withdrawEth}>
             Withdraw
           </button>
         </div>
-        <div class="card-footer text-muted">Code Eater</div>
+        <div className="card-footer text-muted">Sourav</div>
       </div>
     </>
   );
